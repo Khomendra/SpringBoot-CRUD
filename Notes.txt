@@ -1,0 +1,46 @@
+1. it's essential, I spend 3 days to understand simple rule. Days should not be waste.  
+
+   Yes, the naming of repository methods in Spring Data JPA does matter. The method names play a crucial role
+   in automatically generating SQL queries based on the method names, making it a convenient way to interact
+   with your database without writing explicit SQL queries. Therefore, it's essential to follow the correct
+   naming conventions for repository methods.
+
+   Entity class
+   ------------
+
+   @Column(name = "book_name")
+   private String bookName;
+
+   Repo Class
+   ----------
+
+   @Repository
+   public interface BookRepository extends CrudRepository<Book, Integer> {
+       Book findBookByBookName(String bookName);
+   }
+
+   Notice that I changed the repository method from findBookByName to findBookByBookName to match the property 
+   name in your entity class.
+
+   After making this change, your code should work as expected, and you won't encounter the
+   "No property 'name' found for type 'Book'" error.
+
+2. If you choose to keep the method name in your repository interface as it is and do not match it with the 
+   property name in your entity class, you can still resolve the issue by using the @Query annotation to specify 
+   a custom JPQL (Java Persistence Query Language) query for the method. This way, you can define the query 
+   explicitly, and it doesn't need to rely on the method name conventions.
+
+   Entity class
+   ------------
+
+   @Column(name = "book_name")
+   private String bookName;
+
+   Repo Class
+   ----------
+
+   @Repository
+   public interface BookRepository extends CrudRepository<Book, Integer> {
+       @Query("SELECT b FROM Book b WHERE b.bookName = :bookName")
+       Book findBookByName(@Param("bookName") String bookName);
+   }
